@@ -6,6 +6,7 @@
 #include "Animation.h"
 #include "ParticleSystem.h"
 #include <thread>
+#include <vector>
 
 //#define MAX_ZOOM 3.0f
 //#define MIN_ZOOM 0.3f
@@ -17,6 +18,8 @@ class SceneManager;
 class GuiButton;
 
 class Emitter;
+
+class Entity;
 
 class Battle : public Scene
 {
@@ -63,6 +66,12 @@ public:
 
     // Little XP notification above players
     void XPnoti(int xp);
+
+    // Add damage info to vectors
+    void AddDamage(Entity* entity, int damage, bool critical);
+
+    // Little damage notification behind players and enemies
+    void DamageNoti();
 
 
 private:
@@ -138,11 +147,20 @@ private:
     StepedAnimation* stepedAnimation;
     int alpha = 255;
 
+    // XP notifying
     int xp = 0;
     bool notifyXP = false;
     float notifyTime = 0.0f;
     float notifyPos = 80.0f;
     float dt = 0.0f;
+
+    // Damage notifying
+    std::vector<Entity*> entities;
+    std::vector<int> damages;
+    std::vector<float> timers;
+    std::vector<float> positions;
+    std::vector<SDL_Color> colors;
+    bool notifyDamage = true;
 };
 
 #endif // __SCENEBATTLE_H__

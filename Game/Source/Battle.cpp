@@ -528,11 +528,10 @@ bool Battle::Draw()
         sceneManager->render->DrawTexture(VorL, 640 - (rect.w / 2) + 70, 0, &rect);
     }
 
-    if (notifyXP)
-    {
-        XPnoti(xp);
-        notifyTime += dt;
-    }
+    if (notifyXP) XPnoti(xp);
+
+    if (!notifyDamage && entities.size() != 0) notifyDamage = true;
+    if (notifyDamage) DamageNoti();
 
     return false;
 }
@@ -758,6 +757,7 @@ void Battle::DamagePlayer(int player)
             sceneManager->audio->PlayFx(fx.debuffFx);
             sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) }, 
                 EmitterData::EmitterType::HEAL, sceneManager->render);
+            AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt * 2, true);
         }
 
         else
@@ -766,6 +766,7 @@ void Battle::DamagePlayer(int player)
             sceneManager->audio->PlayFx(fx.hurtFx);
             sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) },
                 EmitterData::EmitterType::SMOKE, sceneManager->render);
+            AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt, false);
         }
     }
 
@@ -827,6 +828,8 @@ void Battle::DamageEnemy(int enemy)
             sceneManager->audio->PlayFx(fx.debuffFx);
             sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->position.x + 25.f), (float)sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->position.y },
                 EmitterData::EmitterType::HEAL, sceneManager->render);
+
+            AddDamage(sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data, damageDealt * 2, true);
         }
 
         else
@@ -835,6 +838,7 @@ void Battle::DamageEnemy(int enemy)
             sceneManager->audio->PlayFx(fx.hurtFx);
             sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->position.x + 25.f), (float)sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->position.y },
                 EmitterData::EmitterType::SMOKE, sceneManager->render);
+            AddDamage(sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data, damageDealt, false);
         }
 
     }
@@ -1044,22 +1048,6 @@ bool Battle::OnGuiMouseClickEvent(GuiControl* control)
     return true;
 }
 
-
-void Battle::XPnoti(int xp)
-{
-    std::string text = ("+" + std::to_string(xp) + "xp");
-    if (notifyTime < 2.0f)
-    {
-        for (int i = 0; i < sceneManager->entityManager->entities[0].Count(); i++)
-        {
-            if (sceneManager->entityManager->entities[0].At(i)->data->infoEntities.info.HP > 0) //If not dead, add XP
-                sceneManager->render->DrawText(sceneManager->font, text.c_str(), sceneManager->entityManager->entities[0].At(i)->data->position.x - 16, sceneManager->entityManager->entities[0].At(i)->data->position.y + (int)notifyPos - 130, 20, 0, { 0, 255, 0, 255 }); // 16 is player's width/2
-        }
-        notifyPos -= notifyPos * 0.05;
-    }
-    else notifyXP = false;
-}
-
 void Battle::GiveXP()
 {
     for (int i = 0; i <= totalEnemies; i++)
@@ -1092,4 +1080,65 @@ void Battle::GiveXP()
         if (sceneManager->entityManager->entities[0].At(i)->data->infoEntities.info.HP > 0) //If not dead, add XP
             sceneManager->entityManager->entities[0].At(i)->data->AddXP(xp);
     }
+}
+
+void Battle::XPnoti(int xp)
+{
+    std::string text = ("+" + std::to_string(xp) + "xp");
+    if (notifyTime < 2.0f)
+    {
+        for (int i = 0; i < sceneManager->entityManager->entities[0].Count(); i++)
+        {
+            if (sceneManager->entityManager->entities[0].At(i)->data->infoEntities.info.HP > 0) //If not dead, add XP
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), sceneManager->entityManager->entities[0].At(i)->data->position.x - 16, sceneManager->entityManager->entities[0].At(i)->data->position.y + (int)notifyPos - 130, 20, 0, { 0, 255, 0, 255 }); // 16 is player's width/2
+        }
+        notifyPos -= notifyPos * 0.05;
+    }
+    else notifyXP = false;
+
+    notifyTime += dt;
+}
+
+void Battle::AddDamage(Entity* entity, int damage, bool critical)
+{
+    entities.push_back(entity);
+    damages.push_back(damage);
+    timers.push_back(0.0f);
+    if (entity->type == EntityType::ENEMY) positions.push_back(80.00f);
+    else positions.push_back(-80.00f);
+    if (critical) colors.push_back({ 255, 255, 0, 255 });
+    else colors.push_back({ 255, 0, 0, 255 });
+}
+
+void Battle::DamageNoti()
+{
+    std::string text = ("-0");
+    for (int i = 0; i < entities.size(); i++)
+    {
+        if (timers.at(i) < 0.45f)
+        {
+            text = "-" + std::to_string(damages.at(i));
+            int displacementX = -120;
+            int displacementY = 0;
+            if (entities.at(i)->type == EntityType::ENEMY)
+            {
+                displacementX = 150;
+                displacementY = 32;
+            }
+
+            sceneManager->render->DrawText(sceneManager->font, text.c_str(), entities.at(i)->position.x - (int)positions.at(i) + displacementX, entities.at(i)->position.y + displacementY, 15, 0, colors.at(i));
+            
+            positions.at(i) -= positions.at(i) * 0.05;
+            timers.at(i) += dt;
+        }
+        else
+        {
+            entities.erase(entities.begin() + i);
+            timers.erase(timers.begin() + i);
+            damages.erase(damages.begin() + i);
+            positions.erase(positions.begin() + i);
+            colors.erase(colors.begin() + i);
+        }
+    }
+    if (entities.size() == 0) notifyDamage = false;
 }
