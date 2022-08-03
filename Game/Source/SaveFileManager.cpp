@@ -95,6 +95,41 @@ bool SaveFileManager::LoadGame()
 		sceneManager->render->camera.y = node.child("scenemanager").child("Camera").attribute("y").as_int();
 
 		sceneManager->initialTextTextSaid = node.child("scenemanager").child("Dialogues").attribute("initialTextTextSaid").as_bool();
+		pugi::xml_node exterior = node.child("scenemanager").child("Exterior");
+		pugi::xml_node floor1 = node.child("scenemanager").child("Floor1");
+		pugi::xml_node floor2 = node.child("scenemanager").child("Floor2");
+		// EXTERIOR
+		sceneManager->crazyManActive = exterior.attribute("crazyManActive").as_bool();
+		sceneManager->crazyManDrawable = exterior.attribute("crazyManDrawable").as_bool();
+		// F1
+		sceneManager->leverTri = floor1.attribute("leverTri").as_bool();
+		sceneManager->leverCir = floor1.attribute("leverCir").as_bool();
+		sceneManager->leverCro = floor1.attribute("leverCro").as_bool();
+		sceneManager->doorOpening = floor1.attribute("doorOpening").as_bool();
+		sceneManager->door2Opening = floor1.attribute("door2Opening").as_bool();
+		int leversSize = floor1.attribute("leversSize").as_int();
+		sceneManager->levers.clear();
+		for (int i = 0; i < leversSize; i++)
+		{
+			std::string name = "lever" + std::to_string(i);
+			sceneManager->levers.push_back(floor1.attribute(name.c_str()).as_int());
+		}
+		sceneManager->door1Open = floor1.attribute("door1Open").as_bool();
+		sceneManager->door2Open = floor1.attribute("door2Open").as_bool();
+		// F2
+		sceneManager->p1 = floor2.attribute("p1").as_bool();
+		sceneManager->p2 = floor2.attribute("p2").as_bool();
+		sceneManager->p3 = floor2.attribute("p3").as_bool();
+		sceneManager->p4 = floor2.attribute("p4").as_bool();
+		sceneManager->p5 = floor2.attribute("p5").as_bool();
+		sceneManager->p6 = floor2.attribute("p6").as_bool();
+		sceneManager->p7 = floor2.attribute("p7").as_bool();
+		sceneManager->p8 = floor2.attribute("p8").as_bool();
+		sceneManager->chestopen = floor2.attribute("chestopen").as_bool();
+		sceneManager->seq1 = floor2.attribute("seq1").as_bool();
+		sceneManager->seq2 = floor2.attribute("seq2").as_bool();
+		sceneManager->seq3 = floor2.attribute("seq3").as_bool();
+		sceneManager->seqESP = floor2.attribute("seqESP").as_bool();
 
 		int aux;
 		aux = node.child("scenemanager").child("Scene").attribute("scene").as_int();
@@ -186,9 +221,9 @@ bool SaveFileManager::SaveGame() const
 
 	// SceneManager variables
 	pugi::xml_node sceneManagerSave = node.append_child("SceneManager");
-	pugi::xml_node exterior = node.append_child("Exterior");
-	pugi::xml_node floor1 = node.append_child("Floor1");
-	pugi::xml_node floor2 = node.append_child("Floor2");
+	pugi::xml_node exterior = sceneManagerSave.append_child("Exterior");
+	pugi::xml_node floor1 = sceneManagerSave.append_child("Floor1");
+	pugi::xml_node floor2 = sceneManagerSave.append_child("Floor2");
 		// EXTERIOR
 	exterior.append_attribute("crazyManActive") = sceneManager->crazyManActive;
 	exterior.append_attribute("crazyManDrawable") = sceneManager->crazyManDrawable;
