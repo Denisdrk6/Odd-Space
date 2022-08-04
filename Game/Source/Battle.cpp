@@ -447,8 +447,15 @@ bool Battle::Draw()
 
     //Enemy Draw
     for (int be = 0; be <= totalEnemies; be++)
-        if (sceneManager->entityManager->entities[1].At(totalEnemies - be)->data->infoEntities.info.HP > 0)
+    {
+        Entity* enemy = sceneManager->entityManager->entities[1].At(totalEnemies - be)->data;
+        if (enemy->infoEntities.info.HP > 0)
+        {
             buttons.buttonsEnemies.buttonEnemy[be]->Draw(sceneManager->render, sceneManager->font);
+            std::string life = std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
+            sceneManager->render->DrawText(sceneManager->font, life.c_str(), enemy->position.x, enemy->position.y - 32, 15, 0, {255, 0, 255, 255});
+        }
+    }
     if (chooseMenu == 3) buttons.buttonsEnemies.buttonBack->Draw(sceneManager->render, sceneManager->font);
 
     //Draw text aux window
@@ -596,7 +603,6 @@ bool Battle::Unload()
 
     return false;
 }
-
 
 void Battle::PlayerMenu(float dt)
 {
@@ -1119,7 +1125,7 @@ void Battle::DamageNoti()
         {
             text = "-" + std::to_string(damages.at(i));
             int displacementX = -120;
-            int displacementY = 0;
+            int displacementY = -15;
             if (entities.at(i)->type == EntityType::ENEMY)
             {
                 displacementX = 150;

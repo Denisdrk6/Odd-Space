@@ -35,7 +35,8 @@ StandardPirates::StandardPirates(Render* render, Textures* tex) : Enemy(EnemyTyp
 
     //Drunk Customer stats
     infoEntities.info.name = "Standard Pirate";
-    infoEntities.info.HP = 1;
+    infoEntities.info.HP = (rand() % (17 - 13 + 1)) + 13;
+    infoEntities.info.maxHP = infoEntities.info.HP;
     infoEntities.info.LVL = 1;
     infoEntities.stats.ATK = 0;
     infoEntities.stats.DEF = 0;

@@ -35,7 +35,8 @@ GiantBat::GiantBat(Render* render, Textures* tex) : Enemy(EnemyType::GIANTBAT)
 
     //Giant Bat stats
     infoEntities.info.name = "Giant Bat";
-    infoEntities.info.HP = 10;
+    infoEntities.info.HP = (rand() % (12 - 8 + 1)) + 8;
+    infoEntities.info.maxHP = infoEntities.info.HP;
     infoEntities.info.LVL = 4;
     infoEntities.stats.ATK = 5;
     infoEntities.stats.DEF = 4;

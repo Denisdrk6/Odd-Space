@@ -6,7 +6,6 @@
 #include "Textures.h"
 
 
-
 MutantRat* MutantRat::instance = nullptr;
 // Instance creator
 MutantRat* MutantRat::GetInstance(Render* render, Textures* tex)
@@ -35,7 +34,8 @@ MutantRat::MutantRat(Render* render, Textures* tex) : Enemy(EnemyType::MUTANTRAT
 
     //Mutant Rat stats
     infoEntities.info.name = "Mutant Rat";
-    infoEntities.info.HP = 15;
+    infoEntities.info.HP = (rand() % (17 - 13 + 1)) + 13;
+    infoEntities.info.maxHP = infoEntities.info.HP;
     infoEntities.info.LVL = 3;
     infoEntities.stats.ATK = 10;
     infoEntities.stats.DEF = 3;
