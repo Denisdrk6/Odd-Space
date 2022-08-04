@@ -452,8 +452,27 @@ bool Battle::Draw()
         if (enemy->infoEntities.info.HP > 0)
         {
             buttons.buttonsEnemies.buttonEnemy[be]->Draw(sceneManager->render, sceneManager->font);
+
             std::string life = std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
-            sceneManager->render->DrawText(sceneManager->font, life.c_str(), enemy->position.x, enemy->position.y - 32, 15, 0, {255, 0, 255, 255});
+            float percentage = (float)enemy->infoEntities.info.HP / (float)enemy->infoEntities.info.maxHP;
+            float r, g;
+            r = g = 0;
+            // From green to yellow
+            if (percentage >= 0.5f)
+            {
+                r = (255 * (1 - percentage)) * 2;
+                g = 255;
+            }
+            // From yellow to red
+            else
+            {
+                r = 255;
+                g = 255 * percentage * 2;
+            }
+            LOG("r = %.2f, g = %.2f", r, g);
+            SDL_Color color = { r, g, 0, 255 };
+
+            sceneManager->render->DrawText(sceneManager->font, life.c_str(), enemy->position.x, enemy->position.y - 32, 15, 0, color);
         }
     }
     if (chooseMenu == 3) buttons.buttonsEnemies.buttonBack->Draw(sceneManager->render, sceneManager->font);
