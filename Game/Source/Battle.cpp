@@ -75,6 +75,7 @@ bool Battle::Load()
     sceneManager->render->camera.h = sceneManager->win->screenSurface->h;
 
     UI = sceneManager->tex->Load("sprites/ui/ui_text.png");
+    UI_info = sceneManager->tex->Load("sprites/ui/ui_battleinfo.png");
     VorL = sceneManager->tex->Load("sprites/ui/ui_statebattle.png");
 
     // Buttons Principal Menu
@@ -359,8 +360,11 @@ bool Battle::Update(float dt)
                     sceneManager->audio->FadeOutMusic(0.1f, "audio/music/battle_music.ogg");
                     sceneManager->audio->PlayFx(fx.winFx);
                     sceneManager->wasBattle = true;
-                    sceneManager->entityManager->CreateEntity(EntityType::RANDITEM);
+                    int drop = rand() % 3;
+                    for (int d = 0; d < drop; d++)
+                        drops.push_back(sceneManager->entityManager->CreateEntity(EntityType::RANDITEM));
                     win = true;
+                    infoScreen = true;
                     timerequired = 3;
 
                     GiveXP();
@@ -386,7 +390,11 @@ bool Battle::Update(float dt)
             }
             else
             {
-                TransitionToScene(*sceneManager->entityManager->previousScene);
+                if (!infoScreen)
+                {
+                    drops.clear();
+                    TransitionToScene(*sceneManager->entityManager->previousScene);
+                }
             }
         }
     }
@@ -453,7 +461,9 @@ bool Battle::Draw()
         {
             buttons.buttonsEnemies.buttonEnemy[be]->Draw(sceneManager->render, sceneManager->font);
 
-            std::string life = std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
+            //Enemy info (could be a separate function)
+            std::string life = "HP: " + std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
+            std::string level = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
             float percentage = (float)enemy->infoEntities.info.HP / (float)enemy->infoEntities.info.maxHP;
             float r, g;
             r = g = 0;
@@ -472,7 +482,13 @@ bool Battle::Draw()
             LOG("r = %.2f, g = %.2f", r, g);
             SDL_Color color = { r, g, 0, 255 };
 
-            sceneManager->render->DrawText(sceneManager->font, life.c_str(), enemy->position.x, enemy->position.y - 32, 15, 0, color);
+            int centerPoint = (buttons.buttonsEnemies.buttonEnemy[be]->bounds.w / 2) - ((buttons.buttonsEnemies.buttonEnemy[be]->text.Length() * (buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 4)) / 2);
+            int x = buttons.buttonsEnemies.buttonEnemy[be]->bounds.x + centerPoint;
+            int y = buttons.buttonsEnemies.buttonEnemy[be]->bounds.y + (buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 2) - ((buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 3) / 2) + buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 3;
+            
+            sceneManager->render->DrawText(sceneManager->font, life.c_str(), x, y, 15, 0, color);
+            
+            sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
         }
     }
     if (chooseMenu == 3) buttons.buttonsEnemies.buttonBack->Draw(sceneManager->render, sceneManager->font);
@@ -558,6 +574,9 @@ bool Battle::Draw()
 
     if (!notifyDamage && entities.size() != 0) notifyDamage = true;
     if (notifyDamage) DamageNoti();
+
+    if (infoScreen && preparetochange >= 2.0f) InfoScreen(); // Info screen appears 2 seconds after winning
+
 
     return false;
 }
@@ -1166,4 +1185,68 @@ void Battle::DamageNoti()
         }
     }
     if (entities.size() == 0) notifyDamage = false;
+}
+
+void Battle::InfoScreen()
+{
+    if (sceneManager->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+    {
+        infoScreen = false;
+    }
+    uint w = 0, h = 0;
+    sceneManager->win->GetWindowSize(w, h);
+    // Info texture size is 830x553
+    int x = w / 2 - (830 / 2);
+    int y = h / 2 - (553 / 2);
+    sceneManager->render->DrawTexture(UI_info, x, y);
+
+    int xDisplacement = 20, yDisplacement = 20;
+    std::string text = "nothing";
+
+    // Players info
+    for (int i = 0; i < sceneManager->entityManager->entities[0].Count(); i++)
+    {
+        Entity* entity = sceneManager->entityManager->entities[0].At(i)->data;
+        if (entity->infoEntities.info.HP > 0) //If not dead, put text
+        {
+            // XP gains
+            std::string name = entity->infoEntities.info.name.GetString();
+            text = name + (std::string)" gained ";
+            sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 255, 255, 255, 255 });
+            xDisplacement += sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 20, 0);
+
+            text = "+" + std::to_string(xp) + "xp";
+            sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 0, 255, 0, 255 });
+
+            xDisplacement = 20;
+            //Level up
+            if (entity->infoEntities.info.XP - xp < 0)
+            {
+                yDisplacement += 24;
+                text = name + (std::string)" leveled up to ";
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 255, 255, 255, 255 });
+                xDisplacement += sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 20, 0);
+
+                text = "LVL " + std::to_string(entity->infoEntities.info.LVL);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 255, 255, 0, 255 });
+            }
+
+            xDisplacement = 20;
+            yDisplacement += 34;
+        }
+    }
+
+    // Drops info
+    for (int i = 0; i < drops.size(); i++)
+    {
+        text = "An enemy dropped: ";
+        sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 255, 255, 255, 255 });
+        xDisplacement += sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 20, 0);
+
+        text = drops.at(i)->infoEntities.info.name.GetString();
+        sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 20, 0, { 255, 0, 255, 255 });
+
+        xDisplacement = 20;
+        yDisplacement += 24;
+    }
 }

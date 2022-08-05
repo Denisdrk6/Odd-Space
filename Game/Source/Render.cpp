@@ -258,6 +258,21 @@ bool Render::DrawText(Font* font, const char* text, int x, int y, int size, int 
 	return ret;
 }
 
+int Render::GetTextWidth(Font* font, const char* text, int size, int spacing)
+{
+	int width = 0;
+	float scale = (float)size / font->GetCharRec(32).h;
+	int length = strlen(text);
+
+	for (int i = 0; i < length; i++)
+	{
+		SDL_Rect recGlyph = font->GetCharRec(text[i]);
+		width += ((float)recGlyph.w * scale + spacing);
+	}
+
+	return width;
+}
+
 bool Render::DrawDegradedRectHorizontal(const SDL_Rect& rect, SDL_Color color1, SDL_Color color2, bool useCamera)
 {
 	bool ret = true;

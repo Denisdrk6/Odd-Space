@@ -73,6 +73,9 @@ public:
     // Little damage notification behind players and enemies
     void DamageNoti();
 
+    // Draw info screen
+    void InfoScreen();
+
 
 private:
 
@@ -81,6 +84,7 @@ private:
     SceneManager* sceneManager;
 
     SDL_Texture* UI;
+    SDL_Texture* UI_info;
     SDL_Texture* VorL;
 
     struct Buttons
@@ -161,6 +165,10 @@ private:
     std::vector<float> positions;
     std::vector<SDL_Color> colors;
     bool notifyDamage = true;
+
+    // Final info screen
+    bool infoScreen = false;
+    std::vector<Entity*> drops;
 };
 
 #endif // __SCENEBATTLE_H__

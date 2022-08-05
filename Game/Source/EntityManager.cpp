@@ -145,63 +145,59 @@ Entity* EntityManager::CreateEntity(EntityType type)
 
 	case EntityType::RANDITEM:
 	{
-		int drop = rand() % 3;
-		for (int d = 0; d < drop; d++)
+		switch (rand() % 15)
 		{
-			switch (rand() % 15)
-			{
-				//20%
-			case 0:
-			case 1:
-			case 2:
-				quantity[0]++;
-				ret = RawMeat::GetInstance(render, tex);
-				break;
+			//20%
+		case 0:
+		case 1:
+		case 2:
+			quantity[0]++;
+			ret = RawMeat::GetInstance(render, tex);
+			break;
 
-				//20%
-			case 3:
-			case 4:
-			case 5:
-				quantity[4]++;
-				ret = Pint::GetInstance(render, tex);
-				break;
+			//20%
+		case 3:
+		case 4:
+		case 5:
+			quantity[4]++;
+			ret = Pint::GetInstance(render, tex);
+			break;
 
-				//13%
-			case 6:
-			case 7:
-				quantity[1]++;
-				ret = LargeRawMeat::GetInstance(render, tex);
-				break;
+			//13%
+		case 6:
+		case 7:
+			quantity[1]++;
+			ret = LargeRawMeat::GetInstance(render, tex);
+			break;
 
-				//13%
-			case 8:
-			case 9:
-				quantity[5]++;
-				ret = Jug::GetInstance(render, tex);
-				break;
+			//13%
+		case 8:
+		case 9:
+			quantity[5]++;
+			ret = Jug::GetInstance(render, tex);
+			break;
 
-				//13%
-			case 10:
-			case 11:
-				quantity[2]++;
-				ret = CookedPlate::GetInstance(render, tex);
-				break;
+			//13%
+		case 10:
+		case 11:
+			quantity[2]++;
+			ret = CookedPlate::GetInstance(render, tex);
+			break;
 
-				//13%
-			case 12:
-			case 13:
-				quantity[6]++;
-				ret = StrongRon::GetInstance(render, tex);
-				break;
+			//13%
+		case 12:
+		case 13:
+			quantity[6]++;
+			ret = StrongRon::GetInstance(render, tex);
+			break;
 
-				//7%
-			case 14:
-				quantity[3]++;
-				ret = ElaboratedPlate::GetInstance(render, tex);
-				break;
+			//7%
+		case 14:
+			quantity[3]++;
+			ret = ElaboratedPlate::GetInstance(render, tex);
+			break;
 
-			default: break;
-			}
+		default: break;
 		}
 		break;
 	}

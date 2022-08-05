@@ -54,6 +54,7 @@ public:
 	bool DrawParticle(SDL_Texture* texture, int x, int y, const SDL_Rect* section, const SDL_Rect* rectSize, SDL_Color color, SDL_BlendMode blendMode = SDL_BLENDMODE_ADD, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX) const;
 
 	bool DrawText(Font* font, const char* text, int x, int y, int size, int spacing, SDL_Color tint);
+	int GetTextWidth(Font* font, const char* text, int size, int spacing); // This shouldn't be on renderer module
 
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
