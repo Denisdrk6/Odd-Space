@@ -203,7 +203,7 @@ void Captain::AddXP(int xp)
     int total = infoEntities.info.XP + xp;
 
     // While loop in case we increase more than 1 level
-    while (total > infoEntities.info.maxXP)
+    while (total >= infoEntities.info.maxXP)
     {
         infoEntities.info.LVL++;
         total -= infoEntities.info.maxXP;

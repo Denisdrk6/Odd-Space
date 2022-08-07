@@ -279,11 +279,29 @@ bool Battle::Update(float dt)
         }
         else
         {
+            // If selected enemy is dead, target another random enemy
+            if (actualCharacterAnim < 2 && sceneManager->entityManager->entities[1].At(selectedEnemies[actualCharacterAnim])->data->infoEntities.info.HP <= 0)
+            {
+                std::vector<int> aliveEnemies;
+                for (int i = 0; i < sceneManager->entityManager->entities[1].Count(); i++)
+                {
+                    if (sceneManager->entityManager->entities[1].At(i)->data->infoEntities.info.HP > 0) aliveEnemies.push_back(i);
+                }
+
+                if (aliveEnemies.size() == 1) selectedEnemies[actualCharacterAnim] = aliveEnemies.at(0);
+                else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % aliveEnemies.size() - 1));
+                else { // If no alive enemies, end battle
+                    actualCharacterAnim = 2;
+                    actualEnemyAnim = totalEnemies + 1;
+                }
+            }
+
             //Animation Players
             if (actualCharacterAnim < 2 &&
                 sceneManager->entityManager->entities[0].At(actualCharacterAnim)->data->infoEntities.attack == true &&
                 sceneManager->entityManager->entities[0].At(actualCharacterAnim)->data->infoEntities.info.HP > 0)
             {
+
                 sceneManager->entityManager->entities[1].At(selectedEnemies[actualCharacterAnim])->data->hurtAnim->Update();
                 if (!fx.playOnce)
                 {
@@ -404,6 +422,7 @@ bool Battle::Update(float dt)
 
 bool Battle::Draw()
 {
+    if(chooseMenu != 3 && hoveredEnemy != -1) hoveredEnemy = -1; // TODO: This is probably ineficient
     // BG
     map->Draw(sceneManager->render, sceneManager->drawColliders);
 
@@ -488,7 +507,7 @@ bool Battle::Draw()
             
             sceneManager->render->DrawText(sceneManager->font, life.c_str(), x, y, 15, 0, color);
             
-            sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
+            if(hoveredEnemy == be) sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
         }
     }
     if (chooseMenu == 3) buttons.buttonsEnemies.buttonBack->Draw(sceneManager->render, sceneManager->font);
@@ -645,7 +664,7 @@ bool Battle::Unload()
 void Battle::PlayerMenu(float dt)
 {
     GamePad& pad = sceneManager->input->pads[0];
-
+    
     switch (chooseMenu)
     {
         //Choose Action Menu
@@ -758,6 +777,8 @@ void Battle::PlayerMenu(float dt)
             }
         }
 
+        hoveredEnemy = f;
+
         break;
     }
 }
@@ -778,51 +799,69 @@ void Battle::BattleEscaped()
 
 void Battle::DamagePlayer(int player)
 {
-    int damageDealt = sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.ATK +
-        rand() % (sceneManager->entityManager->entities[0].At(player)->data->infoEntities.info.LVL) -
-        (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.DEF / 4);
+    bool skip = false; // If all enemies are dead but we still have to attack
 
-    if (damageDealt <= 0) damageDealt = 0;
-
-    //Enemy Dodge
-    if (((sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.SPD -
-        sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.SPD) /
-        (rand() % (200 - sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.LCK) + 1)) >= 1);
-
-    //Player Attack
-    else
+    // If selected enemy is dead, target another random enemy
+    if (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP == 0)
     {
-        //Critical
-        if ((((sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.SPD / 2) -
-            sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.SPD) /
-            (rand() % (200 - sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.LCK) + 1)) >= 1)
+        std::vector<int> aliveEnemies;
+        for (int i = 0; i < sceneManager->entityManager->entities[1].Count(); i++)
         {
-            sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP -= (damageDealt * 2);
-            sceneManager->audio->PlayFx(fx.debuffFx);
-            sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) }, 
-                EmitterData::EmitterType::HEAL, sceneManager->render);
-            AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt * 2, true);
+            if (sceneManager->entityManager->entities[1].At(i)->data->infoEntities.info.HP > 0) aliveEnemies.push_back(i);
         }
-
-        else
-        {
-            sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP -= damageDealt;
-            sceneManager->audio->PlayFx(fx.hurtFx);
-            sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) },
-                EmitterData::EmitterType::SMOKE, sceneManager->render);
-            AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt, false);
-        }
+        
+        if (aliveEnemies.size())selectedEnemies[player] = aliveEnemies.at((rand() % aliveEnemies.size() - 1));
+        else skip = true;
     }
 
-    if (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP <= 0)
-	{
-        sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP = 0;
-		sceneManager->audio->PlayFx(fx.deathFx);
+    if (!skip)
+    {
+        int damageDealt = sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.ATK +
+            rand() % (sceneManager->entityManager->entities[0].At(player)->data->infoEntities.info.LVL) -
+            (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.DEF / 4);
 
-        // Check main quest for killing enemies
-        if (sceneManager->questSystem->currentStepType == QuestType::KILL)
-            sceneManager->questSystem->UpdateMain(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.name);
-	}
+        if (damageDealt <= 0) damageDealt = 0;
+
+        //Enemy Dodge
+        if (((sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.SPD -
+            sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.SPD) /
+            (rand() % (200 - sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.LCK) + 1)) >= 1);
+
+        //Player Attack
+        else
+        {
+            //Critical
+            if ((((sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.SPD / 2) -
+                sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.stats.SPD) /
+                (rand() % (200 - sceneManager->entityManager->entities[0].At(player)->data->infoEntities.stats.LCK) + 1)) >= 1)
+            {
+                sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP -= (damageDealt * 2);
+                sceneManager->audio->PlayFx(fx.debuffFx);
+                sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) },
+                    EmitterData::EmitterType::HEAL, sceneManager->render);
+                AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt * 2, true);
+            }
+
+            else
+            {
+                sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP -= damageDealt;
+                sceneManager->audio->PlayFx(fx.hurtFx);
+                sceneManager->particleSystem->AddEmitter({ ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.x + 25.f), ((float)sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->position.y + 25.f) },
+                    EmitterData::EmitterType::SMOKE, sceneManager->render);
+                AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt, false);
+            }
+        }
+
+        if (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP <= 0)
+        {
+            sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP = 0;
+            sceneManager->audio->PlayFx(fx.deathFx);
+
+            // Check main quest for killing enemies
+            if (sceneManager->questSystem->currentStepType == QuestType::KILL)
+                sceneManager->questSystem->UpdateMain(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.name);
+        }
+    }
 }
 
 void Battle::ChangeTurns()

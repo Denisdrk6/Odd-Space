@@ -170,4 +170,5 @@ void Emitter::DestroyParticle(Particle* p)
 	int i = particlePool.Find(p);
 	RELEASE(p);
 	particlePool.Del(particlePool.At(i));
+	p = nullptr;
 }
