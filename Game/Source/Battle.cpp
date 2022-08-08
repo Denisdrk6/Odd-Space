@@ -213,6 +213,7 @@ bool Battle::Update(float dt)
     bool ret = false;
 
     GamePad& pad = sceneManager->input->pads[0];
+    LOG("Animation = %d", animation);
 
     //Player Turn
     if (playerMenu && !sceneManager->wasBattle)
@@ -290,7 +291,9 @@ bool Battle::Update(float dt)
 
                 if (aliveEnemies.size() == 1) selectedEnemies[actualCharacterAnim] = aliveEnemies.at(0);
                 else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % aliveEnemies.size() - 1));
-                else { // If no alive enemies, end battle
+                // If no alive enemies, skip attack and end battle
+                else {
+                    sceneManager->entityManager->entities[0].At(actualCharacterAnim)->data->infoEntities.attack = false;
                     actualCharacterAnim = 2;
                     actualEnemyAnim = totalEnemies + 1;
                 }
@@ -482,7 +485,6 @@ bool Battle::Draw()
 
             //Enemy info (could be a separate function)
             std::string life = "HP: " + std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
-            std::string level = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
             float percentage = (float)enemy->infoEntities.info.HP / (float)enemy->infoEntities.info.maxHP;
             float r, g;
             r = g = 0;
@@ -498,7 +500,6 @@ bool Battle::Draw()
                 r = 255;
                 g = 255 * percentage * 2;
             }
-            LOG("r = %.2f, g = %.2f", r, g);
             SDL_Color color = { r, g, 0, 255 };
 
             int centerPoint = (buttons.buttonsEnemies.buttonEnemy[be]->bounds.w / 2) - ((buttons.buttonsEnemies.buttonEnemy[be]->text.Length() * (buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 4)) / 2);
@@ -507,7 +508,13 @@ bool Battle::Draw()
             
             sceneManager->render->DrawText(sceneManager->font, life.c_str(), x, y, 15, 0, color);
             
-            if(hoveredEnemy == be) sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
+            if (hoveredEnemy == be)
+            {
+                std::string level = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
+                std::string sp = "SP: " + std::to_string(enemy->infoEntities.info.SP);
+                sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
+                sceneManager->render->DrawText(sceneManager->font, sp.c_str(), x, y + 32, 15, 0, { 0, 255, 255, 255 });
+            }
         }
     }
     if (chooseMenu == 3) buttons.buttonsEnemies.buttonBack->Draw(sceneManager->render, sceneManager->font);
@@ -885,6 +892,19 @@ void Battle::ChangeTurns()
 
 void Battle::DamageEnemy(int enemy)
 {
+    // If selected character is dead, target another random character
+    if (sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->infoEntities.info.HP <= 0)
+    {
+        std::vector<int> aliveCharacters;
+        for (int i = 0; i < sceneManager->entityManager->entities[0].Count(); i++)
+        {
+            if (sceneManager->entityManager->entities[0].At(i)->data->infoEntities.info.HP > 0) aliveCharacters.push_back(i);
+        }
+
+        if (aliveCharacters.size() == 1) selectedCharacters[enemy] = aliveCharacters.at(0);
+        else if (aliveCharacters.size())selectedCharacters[enemy] = aliveCharacters.at((rand() % aliveCharacters.size() - 1));
+    }
+
     int damageDealt = sceneManager->entityManager->entities[1].At(enemy)->data->infoEntities.stats.ATK +
         rand() % ((3 * sceneManager->entityManager->entities[1].At(enemy)->data->infoEntities.info.LVL) / 2) -
         (sceneManager->entityManager->entities[0].At(selectedCharacters[enemy])->data->infoEntities.stats.DEF / 4);
@@ -1240,7 +1260,17 @@ void Battle::InfoScreen()
     sceneManager->render->DrawTexture(UI_info, x, y);
 
     int xDisplacement = 20, yDisplacement = 20;
-    std::string text = "nothing";
+    std::string text = "RECAP";
+
+    int textWidth = sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 50, 3);
+    xDisplacement = (830 / 2) - (textWidth / 2);
+    // Title
+    sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + xDisplacement, y + yDisplacement, 50, 3, { 252, 186, 3, 255 });
+
+    // Underline for title
+    sceneManager->render->DrawRectangle({ x + xDisplacement, y + yDisplacement + 50, textWidth, 2 }, 252, 186, 3);
+    xDisplacement = 20;
+    yDisplacement += 80;
 
     // Players info
     for (int i = 0; i < sceneManager->entityManager->entities[0].Count(); i++)
