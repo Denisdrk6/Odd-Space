@@ -35,13 +35,13 @@ DrunkCustomer::DrunkCustomer(Render* render, Textures* tex) : Enemy(EnemyType::D
 
     //Drunk Customer stats
     infoEntities.info.name = "Drunk Customer";
-    infoEntities.info.HP = (rand() % (25 - 19 + 1)) + 19;
+    infoEntities.info.LVL = (rand() % (3 - 1 + 1)) + 1; // 1-3
+    infoEntities.info.HP = (rand() % (20 - 14 + 1)) + 16 + (3 * infoEntities.info.LVL);
     infoEntities.info.maxHP = infoEntities.info.HP;
-    infoEntities.info.LVL = 2;
-    infoEntities.stats.ATK = 8;
-    infoEntities.stats.DEF = 7;
-    infoEntities.stats.SPD = 4;
-    infoEntities.stats.LCK = 5;
+    infoEntities.stats.ATK = 5 + 2 * infoEntities.info.LVL;
+    infoEntities.stats.DEF = 3 + 2 * infoEntities.info.LVL;
+    infoEntities.stats.SPD = 2 + infoEntities.info.LVL;
+    infoEntities.stats.LCK = 3 + infoEntities.info.LVL;
 
     // Define Player animations
     drunkCustomerTexture = this->tex->Load("sprites/enemies/nme_aggressivedrunkman_w.png");

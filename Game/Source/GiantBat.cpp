@@ -35,13 +35,13 @@ GiantBat::GiantBat(Render* render, Textures* tex) : Enemy(EnemyType::GIANTBAT)
 
     //Giant Bat stats
     infoEntities.info.name = "Giant Bat";
-    infoEntities.info.HP = (rand() % (12 - 8 + 1)) + 8;
+    infoEntities.info.LVL = (rand() % (4 - 3 + 1)) + 3; // 3-4
+    infoEntities.info.HP = (rand() % (12 - 8 + 1)) + 8 + (2 * infoEntities.info.LVL);
     infoEntities.info.maxHP = infoEntities.info.HP;
-    infoEntities.info.LVL = 4;
-    infoEntities.stats.ATK = 5;
-    infoEntities.stats.DEF = 4;
-    infoEntities.stats.SPD = 10;
-    infoEntities.stats.LCK = 5;
+    infoEntities.stats.ATK = 4 + 2 * infoEntities.info.LVL;
+    infoEntities.stats.DEF = 2 + 2 * infoEntities.info.LVL;
+    infoEntities.stats.SPD = 8 + infoEntities.info.LVL;
+    infoEntities.stats.LCK = 3 + infoEntities.info.LVL;;
 
     // Define Player animations
     giantBatTexture = this->tex->Load("sprites/enemies/nme_normalbat_w.png");

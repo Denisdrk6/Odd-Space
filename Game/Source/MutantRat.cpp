@@ -34,13 +34,13 @@ MutantRat::MutantRat(Render* render, Textures* tex) : Enemy(EnemyType::MUTANTRAT
 
     //Mutant Rat stats
     infoEntities.info.name = "Mutant Rat";
-    infoEntities.info.HP = (rand() % (17 - 13 + 1)) + 13;
+    infoEntities.info.LVL = (rand() % (3 - 2 + 1)) + 2; // 2-3
+    infoEntities.info.HP = (rand() % (14 - 10 + 1)) + 10 + (2* infoEntities.info.LVL);
     infoEntities.info.maxHP = infoEntities.info.HP;
-    infoEntities.info.LVL = 3;
-    infoEntities.stats.ATK = 10;
-    infoEntities.stats.DEF = 3;
-    infoEntities.stats.SPD = 7;
-    infoEntities.stats.LCK = 4;
+    infoEntities.stats.ATK = 6 + 2 * infoEntities.info.LVL;
+    infoEntities.stats.DEF = 2 + infoEntities.info.LVL;
+    infoEntities.stats.SPD = 5 + infoEntities.info.LVL;
+    infoEntities.stats.LCK = 2 + 2 * infoEntities.info.LVL;
 
     // Define Player animations
     mutantRatTexture = this->tex->Load("sprites/enemies/nme_normalrat_w.png");
