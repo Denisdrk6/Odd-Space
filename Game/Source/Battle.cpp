@@ -510,10 +510,27 @@ bool Battle::Draw()
             
             if (hoveredEnemy == be)
             {
-                std::string level = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
-                std::string sp = "SP: " + std::to_string(enemy->infoEntities.info.SP);
-                sceneManager->render->DrawText(sceneManager->font, level.c_str(), x, y + 16, 15, 0, { 255, 0, 255, 255 });
-                sceneManager->render->DrawText(sceneManager->font, sp.c_str(), x, y + 32, 15, 0, { 0, 255, 255, 255 });
+                int width = 0;
+                std::string text = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x, y + 18 * 1, 15, 0, { 255, 0, 255, 255 });
+                width = sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 15, 0);
+
+                text = "SP: " + std::to_string(enemy->infoEntities.info.SP);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + width + 16, y + 18 * 1, 15, 0, { 0, 255, 255, 255 });
+
+                text = "ATK: " + std::to_string(enemy->infoEntities.stats.ATK);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x, y + 18 * 2, 15, 0, { 217, 173, 250, (int)(0.8 * 255)});
+                width = sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 15, 0);
+
+                text = "DEF: " + std::to_string(enemy->infoEntities.stats.DEF);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + width + 16, y + 18 * 2, 15, 0, { 217, 173, 250, (int)(0.8 * 255)});
+
+                text = "SPD: " + std::to_string(enemy->infoEntities.stats.SPD);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x, y + 18 * 3, 15, 0, { 217, 173, 250, (int)(0.8 * 255)});
+                width = sceneManager->render->GetTextWidth(sceneManager->font, text.c_str(), 15, 0);
+
+                text = "LCK: " + std::to_string(enemy->infoEntities.stats.LCK);
+                sceneManager->render->DrawText(sceneManager->font, text.c_str(), x + width + 16, y + 18 * 3, 15, 0, { 217, 173, 250, (int)(0.8 * 255)});
             }
         }
     }
