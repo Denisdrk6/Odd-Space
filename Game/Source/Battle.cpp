@@ -290,7 +290,7 @@ bool Battle::Update(float dt)
                 }
 
                 if (aliveEnemies.size() == 1) selectedEnemies[actualCharacterAnim] = aliveEnemies.at(0);
-                else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % aliveEnemies.size() - 1));
+                else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % (aliveEnemies.size() - 1)));
                 // If no alive enemies, skip attack and end battle
                 else {
                     sceneManager->entityManager->entities[0].At(actualCharacterAnim)->data->infoEntities.attack = false;
