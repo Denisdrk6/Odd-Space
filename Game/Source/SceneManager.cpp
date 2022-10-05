@@ -169,9 +169,10 @@ bool SceneManager::Update(float dt)
 			else entityManager->CreateEntity(EntityType::HERO)->transitioning = false;
 		}
 
-		if ((input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN || pad.GetPadKey(SDL_CONTROLLER_BUTTON_START) == KEY_DOWN) &&
-			(currentscenetype != SceneType::BATTLE && currentscenetype != SceneType::LOGO && currentscenetype != SceneType::TITLE && currentscenetype != SceneType::NAME_SELECTOR && !isDebug))
+		if (((input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN || pad.GetPadKey(SDL_CONTROLLER_BUTTON_START) == KEY_DOWN) &&
+			(currentscenetype != SceneType::BATTLE && currentscenetype != SceneType::LOGO && currentscenetype != SceneType::TITLE && currentscenetype != SceneType::NAME_SELECTOR && !isDebug)) || exitPauseMenu)
 		{
+			exitPauseMenu = false;
 			if(!menuOpen) isPause = !isPause;
 			dialogueSystem->paused = true;
 			dialogueSystem->speak->paused = true;
@@ -179,7 +180,7 @@ bool SceneManager::Update(float dt)
 			else
 			{
 				entityManager->CreateEntity(EntityType::HERO)->transitioning = true;
-				pauseFadingIn = true;
+				if(!menuOpen) pauseFadingIn = true;
 			}
 			
 		}

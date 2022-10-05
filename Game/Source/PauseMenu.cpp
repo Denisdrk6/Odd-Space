@@ -84,7 +84,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             sceneManager->options->Unload();
-            sceneManager->menuOpen = false;
+            //sceneManager->menuOpen = false;
         }
         else sceneManager->options->Update(dt);
     }
@@ -95,7 +95,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             sceneManager->items->Unload();
-            sceneManager->menuOpen = false;
+            //sceneManager->menuOpen = false;
         }
         else sceneManager->items->Update(dt);
     }
@@ -120,7 +120,7 @@ bool PauseMenu::Update(float dt)
         {
             saveloadmenu = !saveloadmenu;
             f = f2;
-            sceneManager->menuOpen = false;
+           // sceneManager->menuOpen = false;
         }
     }
     else if (questmenu)
@@ -130,7 +130,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             questmenu = !questmenu;
-            sceneManager->menuOpen = false;
+            //sceneManager->menuOpen = false;
         }
     }
     else if (exitmenu)
@@ -154,7 +154,7 @@ bool PauseMenu::Update(float dt)
         {
             exitmenu = !exitmenu;
             f = f2;
-            sceneManager->menuOpen = false;
+            //sceneManager->menuOpen = false;
         }
     }
     else
@@ -175,6 +175,14 @@ bool PauseMenu::Update(float dt)
         buttonSettings->Update(sceneManager->input, buttonMenuMax[f], dt);
         buttonSaveLoad->Update(sceneManager->input, buttonMenuMax[f], dt);
         buttonExitMenu->Update(sceneManager->input, buttonMenuMax[f], dt);
+
+        if (!sceneManager->pauseFadingIn && (sceneManager->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN
+            || sceneManager->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN
+            || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN))
+        {
+            sceneManager->menuOpen = false;
+            sceneManager->exitPauseMenu = true;
+        }
     }
 
     // Fade out
