@@ -169,18 +169,18 @@ bool SceneManager::Update(float dt)
 			else entityManager->CreateEntity(EntityType::HERO)->transitioning = false;
 		}
 
-		if (((input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN || pad.GetPadKey(SDL_CONTROLLER_BUTTON_START) == KEY_DOWN) &&
-			(currentscenetype != SceneType::BATTLE && currentscenetype != SceneType::LOGO && currentscenetype != SceneType::TITLE && currentscenetype != SceneType::NAME_SELECTOR && !isDebug)) || exitPauseMenu)
+		if ((input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN || pad.GetPadKey(SDL_CONTROLLER_BUTTON_START) == KEY_DOWN) &&
+			(currentscenetype != SceneType::BATTLE && currentscenetype != SceneType::LOGO && currentscenetype != SceneType::TITLE && currentscenetype != SceneType::NAME_SELECTOR && !isDebug))
 		{
-			exitPauseMenu = false;
-			if(!menuOpen) isPause = !isPause;
+			if (menuOpen && !onSubMenu) menuOpen = false; // Checks if we are exiting the pause menu and not a sub menu
+			if(!menuOpen) isPause = !isPause; // Can't merge with top line because first time we open menu, it glitches
 			dialogueSystem->paused = true;
 			dialogueSystem->speak->paused = true;
 			if (!isPause) pauseFadingOut = true; // Start fading out pause menu
 			else
 			{
 				entityManager->CreateEntity(EntityType::HERO)->transitioning = true;
-				if(!menuOpen) pauseFadingIn = true;
+				if (!menuOpen) pauseFadingIn = true;
 			}
 			
 		}

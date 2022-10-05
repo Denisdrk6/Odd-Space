@@ -169,7 +169,7 @@ public:
 	bool pauseFadingIn = false;
 	bool pauseFadingOut = false; // Checks if pause menu is fading out
 	bool unloadPauseMenu = false; // Tells scene manager to unload pause menu when it has faded out
-	bool exitPauseMenu = false;
+	bool onSubMenu = false;
 
 	//SString tempCurrentInteraction = "/0"; // Used to check INTERACT quests
 

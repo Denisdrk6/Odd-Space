@@ -84,6 +84,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             sceneManager->options->Unload();
+            sceneManager->onSubMenu = false;
             //sceneManager->menuOpen = false;
         }
         else sceneManager->options->Update(dt);
@@ -95,6 +96,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             sceneManager->items->Unload();
+            sceneManager->onSubMenu = false;
             //sceneManager->menuOpen = false;
         }
         else sceneManager->items->Update(dt);
@@ -120,6 +122,7 @@ bool PauseMenu::Update(float dt)
         {
             saveloadmenu = !saveloadmenu;
             f = f2;
+            sceneManager->onSubMenu = false;
            // sceneManager->menuOpen = false;
         }
     }
@@ -130,6 +133,7 @@ bool PauseMenu::Update(float dt)
             || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN)
         {
             questmenu = !questmenu;
+            sceneManager->onSubMenu = false;
             //sceneManager->menuOpen = false;
         }
     }
@@ -154,6 +158,7 @@ bool PauseMenu::Update(float dt)
         {
             exitmenu = !exitmenu;
             f = f2;
+            sceneManager->onSubMenu = false;
             //sceneManager->menuOpen = false;
         }
     }
@@ -175,14 +180,6 @@ bool PauseMenu::Update(float dt)
         buttonSettings->Update(sceneManager->input, buttonMenuMax[f], dt);
         buttonSaveLoad->Update(sceneManager->input, buttonMenuMax[f], dt);
         buttonExitMenu->Update(sceneManager->input, buttonMenuMax[f], dt);
-
-        if (!sceneManager->pauseFadingIn && (sceneManager->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN
-            || sceneManager->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN
-            || pad.GetPadKey(SDL_CONTROLLER_BUTTON_B) == KEY_DOWN))
-        {
-            sceneManager->menuOpen = false;
-            sceneManager->exitPauseMenu = true;
-        }
     }
 
     // Fade out
@@ -502,6 +499,7 @@ bool PauseMenu::OnGuiMouseClickEvent(GuiControl* control)
             sceneManager->items->Load();
             sceneManager->openItems = true;
             sceneManager->menuOpen = true;
+            sceneManager->onSubMenu = true;
             break;
         case 2:
             break;
@@ -517,11 +515,13 @@ bool PauseMenu::OnGuiMouseClickEvent(GuiControl* control)
             stepedAnimation->Pushback(334, 83, 382, 382, 233, 5);
             stepedAnimation->Pushback(83, 83, 382, 288, 5, 94);
             sceneManager->menuOpen = true;
+            sceneManager->onSubMenu = true;
             break;
         case 4:
             sceneManager->options->Load();
             sceneManager->openOptions = true;
             sceneManager->menuOpen = true;
+            sceneManager->onSubMenu = true;
             break;
         case 5:
             saveloadmenu = true;
@@ -536,6 +536,7 @@ bool PauseMenu::OnGuiMouseClickEvent(GuiControl* control)
             stepedAnimation->Pushback(83, 83, 570, 476, 5, 94);
             f2 = f;
             sceneManager->menuOpen = true;
+            sceneManager->onSubMenu = true;
             break;
         case 6:
             exitmenu = true;
@@ -548,6 +549,7 @@ bool PauseMenu::OnGuiMouseClickEvent(GuiControl* control)
             stepedAnimation->Pushback(1182, 83, 664, 664, 1103 - 253, 5);
             stepedAnimation->Pushback(83, 83, 664, 570, 5, 94);
             sceneManager->menuOpen = true;
+            sceneManager->onSubMenu = true;
             break;
         default: break;
         }
