@@ -1,12 +1,12 @@
 #include "PauseMenu.h"
 
 #include "SceneManager.h"
+#include "easings.h"
 
 // Constructor
 PauseMenu::PauseMenu(SceneManager* sceneManager)
 {
     this->sceneManager = sceneManager;
-    sceneManager->alphaP = 1.0f;
 }
 // Destructor
 PauseMenu::~PauseMenu()
@@ -24,17 +24,23 @@ bool PauseMenu::Load()
 
     buttonItems = new GuiButton(1, { 90, 109, 240, 81 }, "Items", sceneManager->audio);
     buttonItems->SetObserver(this);
+    originalButtonsY[0] = 109;
     buttonSkills = new GuiButton(2, { 94, 203, 240, 81 }, "Skills", sceneManager->audio);
     buttonSkills->SetObserver(this);
     buttonSkills->disabled = true;
+    originalButtonsY[1] = 203;
     buttonQuest = new GuiButton(3, { 86, 297, 240, 81 }, "Quest", sceneManager->audio);
     buttonQuest->SetObserver(this);
+    originalButtonsY[2] = 297;
     buttonSettings = new GuiButton(4, { 88, 391, 240, 81 }, "Settings", sceneManager->audio);
     buttonSettings->SetObserver(this);
+    originalButtonsY[3] = 391;
     buttonSaveLoad = new GuiButton(5, { 82, 485, 240, 81 }, "Save/Load", sceneManager->audio);
     buttonSaveLoad->SetObserver(this);
+    originalButtonsY[4] = 485;
     buttonExitMenu = new GuiButton(6, { 90, 579, 240, 81 }, "Exit", sceneManager->audio);
     buttonExitMenu->SetObserver(this);
+    originalButtonsY[5] = 579;
 
     buttonSave = new GuiButton(1, { 280, 109, 240, 81 }, "Save", sceneManager->audio);
     buttonSave->SetObserver(this);
@@ -174,20 +180,29 @@ bool PauseMenu::Update(float dt)
     // Fade out
     if (sceneManager->pauseFadingOut)
     {
-        if (sceneManager->alphaP > 1.0f)
+        yEase = EaseBackIn(timePassed, 0, 720, 0.7f);
+        timePassed += dt;
+        if (timePassed >= 0.7f)
         {
-            sceneManager->alphaP = 1.0f;
-            sceneManager->unloadPauseMenu = true;
+            yEase = 720;
             sceneManager->pauseFadingOut = false;
+            timePassed = 0;
         }
-        else sceneManager->alphaP += (1.0f * dt);
     }
 
     // Fade in
-    else
+    else if(sceneManager->pauseFadingIn)
     {
-        if (sceneManager->alphaP < 0.01f) sceneManager->alphaP = 0.0f;
-        else sceneManager->alphaP -= (1.0f * dt);
+        yEase = EaseBackOut(timePassed, 720, -720, 0.7f);
+        timePassed += dt;
+        if (timePassed >= 0.7f)
+        {
+            yEase = 0;
+            sceneManager->pauseFadingIn = false;
+            timePassed = 0;
+        }
+        //if (sceneManager->alphaP < 0.01f) sceneManager->alphaP = 0.0f;
+        //else sceneManager->alphaP -= (1.0f * dt);
     }
 
     return true;
@@ -197,7 +212,7 @@ bool PauseMenu::Draw()
 {
     SDL_Rect rect = { 1106, 0, 1105, 624 };
     
-    sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + 80, -sceneManager->render->camera.y + 50, &rect);
+    sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + 80, -sceneManager->render->camera.y + 50 + yEase, &rect);
 
     if (sceneManager->openOptions == false 
         && sceneManager->openItems == false 
@@ -208,54 +223,55 @@ bool PauseMenu::Draw()
         //Player
         SDL_Rect face = { 848, 64, 168, 224 };
 
-        sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + (rect.w / 3), -sceneManager->render->camera.y + (rect.h / 5), &face);
+        sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + (rect.w / 3), -sceneManager->render->camera.y + (rect.h / 5) + yEase, &face);
 
         std::string name = sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.name.GetString();
-        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 32 + rect.w / 2, 48 + (rect.h / 7), 30, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 32 + rect.w / 2, 48 + (rect.h / 7) + yEase, 30, 0, { 255, 255, 255, 255 });
 
         std::string level = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.LVL);
-        sceneManager->render->DrawText(sceneManager->font, ("Level " + level).c_str(), 32 + (rect.w / 2), 48 + rect.h / 3.75f, 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("Level " + level).c_str(), 32 + (rect.w / 2), 48 + rect.h / 3.75f + yEase, 25, 0, { 255, 255, 255, 255 });
 
         std::string xp = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.XP);
         std::string maxXp = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.maxXP);
-        sceneManager->render->DrawText(sceneManager->font, ("Exp. "+ xp + " / " + maxXp).c_str(), 32 + rect.w / 2, 48 + (rect.h / 2.5f), 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("Exp. "+ xp + " / " + maxXp).c_str(), 32 + rect.w / 2, 48 + (rect.h / 2.5f) + yEase, 25, 0, { 255, 255, 255, 255 });
 
         std::string HP = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.HP);
         std::string maxHP = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.maxHP);
-        sceneManager->render->DrawText(sceneManager->font, ("HP " + HP + " / " + maxHP).c_str(), 32 + (rect.w / 1.25f), 48 + rect.h / 3.75f, 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("HP " + HP + " / " + maxHP).c_str(), 32 + (rect.w / 1.25f), 48 + rect.h / 3.75f + yEase, 25, 0, { 255, 255, 255, 255 });
 
         std::string SP = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.SP);
         std::string maxSP = std::to_string(sceneManager->entityManager->entities[0].At(0)->data->infoEntities.info.maxSP);
-        sceneManager->render->DrawText(sceneManager->font, ("SP " + SP + " / " + maxSP).c_str(), 32 + (rect.w / 1.25f), 48 + rect.h / 2.5f, 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("SP " + SP + " / " + maxSP).c_str(), 32 + (rect.w / 1.25f), 48 + rect.h / 2.5f + yEase, 25, 0, { 255, 255, 255, 255 });
 
         //Captain
         face = { 848, 288, 168, 208 };
 
-        sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + (rect.w / 3), -sceneManager->render->camera.y + (rect.h / 1.5f), &face);
+        sceneManager->render->DrawTexture(pause, -sceneManager->render->camera.x + (rect.w / 3), -sceneManager->render->camera.y + (rect.h / 1.5f) + yEase, &face);
 
         name = sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.name.GetString();
-        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.7f), 30, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.7f) + yEase, 30, 0, { 255, 255, 255, 255 });
 
         level = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.LVL);
-        sceneManager->render->DrawText(sceneManager->font, ("Level " + level).c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.4f), 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("Level " + level).c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.4f) + yEase, 25, 0, { 255, 255, 255, 255 });
 
         xp = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.XP);
         maxXp = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.maxXP);
-        sceneManager->render->DrawText(sceneManager->font, ("Exp. " + xp + " / " + maxXp).c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.2f), 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("Exp. " + xp + " / " + maxXp).c_str(), 32 + rect.w / 2, 48 + (rect.h / 1.2f) + yEase, 25, 0, { 255, 255, 255, 255 });
 
         HP = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.HP);
         maxHP = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.maxHP);
-        sceneManager->render->DrawText(sceneManager->font, ("HP " + HP + " / " + maxHP).c_str(), 32 + rect.w / 1.25f, 48 + (rect.h / 1.4f), 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("HP " + HP + " / " + maxHP).c_str(), 32 + rect.w / 1.25f, 48 + (rect.h / 1.4f) + yEase, 25, 0, { 255, 255, 255, 255 });
 
         SP = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.SP);
         maxSP = std::to_string(sceneManager->entityManager->entities[0].At(1)->data->infoEntities.info.maxSP);
-        sceneManager->render->DrawText(sceneManager->font, ("SP " + SP + " / " + maxSP).c_str(), 32 + rect.w / 1.25f, 48 + (rect.h / 1.2f), 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("SP " + SP + " / " + maxSP).c_str(), 32 + rect.w / 1.25f, 48 + (rect.h / 1.2f) + yEase, 25, 0, { 255, 255, 255, 255 });
 
         int amountDisapeared = 0;
 
         for (int i = 0; i < stepedAnimation->currentStep; i++)
         {
             SDL_Rect temp = stepedAnimation->GetStep(i);
+            temp.y += yEase;
             sceneManager->render->DrawRectangle(temp, 255, 255, 255, stepedAnimation->steps[i].alpha, true, false);
             if (stepedAnimation->steps[i].disapear) stepedAnimation->steps[i].alpha -= 3;
             if (stepedAnimation->steps[i].alpha <= 0)
@@ -270,6 +286,7 @@ bool PauseMenu::Draw()
         if (!stepedAnimation->animationCompleted)
         {
             SDL_Rect temp = stepedAnimation->Update();
+            temp.y += yEase;
             sceneManager->render->DrawRectangle(temp, 255, 255, 255, 255, true, false);
         }
 
@@ -282,8 +299,17 @@ bool PauseMenu::Draw()
             stepedAnimation->Pushback(334, 334, 666, 100, 5, 94);
         }
     }
-    sceneManager->render->DrawText(sceneManager->font, "Current", 145, 67, 25, 0, { 255, 255, 255, 255 });
+    sceneManager->render->DrawText(sceneManager->font, "Current", 145, 67 + yEase, 25, 0, { 255, 255, 255, 255 });
    
+    if (sceneManager->pauseFadingIn || sceneManager->pauseFadingOut)
+    {
+        buttonItems->bounds.y = yEase + originalButtonsY[0];
+        buttonSkills->bounds.y = yEase + originalButtonsY[1];
+        buttonQuest->bounds.y = yEase + originalButtonsY[2];
+        buttonSettings->bounds.y = yEase + originalButtonsY[3];
+        buttonSaveLoad->bounds.y = yEase + originalButtonsY[4];
+        buttonExitMenu->bounds.y = yEase + originalButtonsY[5];
+    }
     buttonItems->Draw(sceneManager->render, sceneManager->font);
     buttonSkills->Draw(sceneManager->render, sceneManager->font);
     buttonQuest->Draw(sceneManager->render, sceneManager->font);
@@ -415,7 +441,7 @@ bool PauseMenu::Draw()
     }
 
     //black rectangle for fades in out
-    sceneManager->render->DrawRectangle({ -sceneManager->render->camera.x + 80, -sceneManager->render->camera.y + 50, 1105, 624 }, 0, 0, 0, (unsigned char)(255 * sceneManager->alphaP));
+    //sceneManager->render->DrawRectangle({ -sceneManager->render->camera.x + 80, -sceneManager->render->camera.y + 50, 1105, 624 }, 0, 0, 0, (unsigned char)(255 * sceneManager->alphaP));
 
     return true;
 }

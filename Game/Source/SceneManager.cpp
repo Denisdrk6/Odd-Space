@@ -175,11 +175,12 @@ bool SceneManager::Update(float dt)
 			if(!menuOpen) isPause = !isPause;
 			dialogueSystem->paused = true;
 			dialogueSystem->speak->paused = true;
-			if (!isPause)
+			if (!isPause) pauseFadingOut = true; // Start fading out pause menu
+			else
 			{
-				pauseFadingOut = true; // Start fading out pause menu
+				entityManager->CreateEntity(EntityType::HERO)->transitioning = true;
+				pauseFadingIn = true;
 			}
-			else entityManager->CreateEntity(EntityType::HERO)->transitioning = true;
 			
 		}
 
@@ -190,7 +191,6 @@ bool SceneManager::Update(float dt)
 			if (openOptions) options->Unload();
 			entityManager->CreateEntity(EntityType::HERO)->transitioning = false;
 			audio->PlayFx(unPauseFx);
-			alphaP = 1.0f;
 			unloadPauseMenu = false;
 			dialogueSystem->paused = false;
 			dialogueSystem->speak->paused = false;

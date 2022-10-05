@@ -65,6 +65,11 @@ private:
 
     int alpha = 255;
     int offsetY = 89;
+
+    // Ease in/out variables when apening/closing menu
+    float yEase = 720;
+    float timePassed = 0;
+    int originalButtonsY[6];
 };
 
 #endif // __PAUSEMENU_H__
