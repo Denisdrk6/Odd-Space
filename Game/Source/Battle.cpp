@@ -290,7 +290,7 @@ bool Battle::Update(float dt)
                 }
 
                 if (aliveEnemies.size() == 1) selectedEnemies[actualCharacterAnim] = aliveEnemies.at(0);
-                else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % (aliveEnemies.size() - 1)));
+                else if (aliveEnemies.size())selectedEnemies[actualCharacterAnim] = aliveEnemies.at((rand() % (aliveEnemies.size() - 1))); // rand() % (aliveEnemies.size() - 1))
                 // If no alive enemies, skip attack and end battle
                 else {
                     sceneManager->entityManager->entities[0].At(actualCharacterAnim)->data->infoEntities.attack = false;
@@ -481,10 +481,6 @@ bool Battle::Draw()
         Entity* enemy = sceneManager->entityManager->entities[1].At(totalEnemies - be)->data;
         if (enemy->infoEntities.info.HP > 0)
         {
-            buttons.buttonsEnemies.buttonEnemy[be]->Draw(sceneManager->render, sceneManager->font);
-
-            //Enemy info (could be a separate function)
-            std::string life = "HP: " + std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
             float percentage = (float)enemy->infoEntities.info.HP / (float)enemy->infoEntities.info.maxHP;
             float r, g;
             r = g = 0;
@@ -506,10 +502,17 @@ bool Battle::Draw()
             int x = buttons.buttonsEnemies.buttonEnemy[be]->bounds.x + centerPoint;
             int y = buttons.buttonsEnemies.buttonEnemy[be]->bounds.y + (buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 2) - ((buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 3) / 2) + buttons.buttonsEnemies.buttonEnemy[be]->bounds.h / 3;
             
-            sceneManager->render->DrawText(sceneManager->font, life.c_str(), x, y, 15, 0, color);
             
             if (hoveredEnemy == be)
             {
+                buttons.buttonsEnemies.buttonEnemy[be]->Draw(sceneManager->render, sceneManager->font);
+
+                //Enemy info (could be a separate function)
+                std::string life = "HP: " + std::to_string(enemy->infoEntities.info.HP) + "/" + std::to_string(enemy->infoEntities.info.maxHP);
+
+                sceneManager->render->DrawText(sceneManager->font, life.c_str(), x, y, 15, 0, color);
+
+
                 int width = 0;
                 std::string text = "LVL: " + std::to_string(enemy->infoEntities.info.LVL);
                 sceneManager->render->DrawText(sceneManager->font, text.c_str(), x, y + 18 * 1, 15, 0, { 255, 0, 255, 255 });
@@ -919,7 +922,7 @@ void Battle::DamageEnemy(int enemy)
         }
 
         if (aliveCharacters.size() == 1) selectedCharacters[enemy] = aliveCharacters.at(0);
-        else if (aliveCharacters.size())selectedCharacters[enemy] = aliveCharacters.at((rand() % aliveCharacters.size() - 1));
+        else if (aliveCharacters.size())selectedCharacters[enemy] = aliveCharacters.at((rand() % (aliveCharacters.size() - 1)));
     }
 
     int damageDealt = sceneManager->entityManager->entities[1].At(enemy)->data->infoEntities.stats.ATK +

@@ -191,6 +191,7 @@ bool PauseMenu::Update(float dt)
         {
             yEase = 720;
             sceneManager->pauseFadingOut = false;
+            sceneManager->entityManager->CreateEntity(EntityType::HERO)->transitioning = false;
             timePassed = 0;
         }
     }

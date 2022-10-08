@@ -36,7 +36,7 @@ DrunkCustomer::DrunkCustomer(Render* render, Textures* tex) : Enemy(EnemyType::D
     //Drunk Customer stats
     infoEntities.info.name = "Drunk Customer";
     infoEntities.info.LVL = (rand() % (3 - 1 + 1)) + 1; // 1-3
-    infoEntities.info.HP = (rand() % (20 - 14 + 1)) + 16 + (3 * infoEntities.info.LVL);
+    infoEntities.info.HP = (rand() % (20 - 14 + 1)) + 14 + (3 * infoEntities.info.LVL);
     infoEntities.info.maxHP = infoEntities.info.HP;
     infoEntities.stats.ATK = 5 + 2 * infoEntities.info.LVL;
     infoEntities.stats.DEF = 3 + 2 * infoEntities.info.LVL;
