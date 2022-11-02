@@ -13,6 +13,8 @@
 
 #include "Enemy.h"
 
+#include "easings.h"
+
 // Constructor
 Battle::Battle(SceneManager* sceneManager)
 {
@@ -1238,19 +1240,31 @@ void Battle::DamageNoti()
     std::string text = ("-0");
     for (int i = 0; i < entities.size(); i++)
     {
-        if (timers.at(i) < 0.45f)
+        if (timers.at(i) < 0.8f)
         {
             text = "-" + std::to_string(damages.at(i));
             int displacementX = -120;
-            int displacementY = -15;
             if (entities.at(i)->type == EntityType::ENEMY)
             {
                 displacementX = 150;
-                displacementY = 32;
             }
 
-            sceneManager->render->DrawText(sceneManager->font, text.c_str(), entities.at(i)->position.x - (int)positions.at(i) + displacementX, entities.at(i)->position.y + displacementY, 15, 0, colors.at(i));
-            
+            float relativeX, posY = 0;
+            if (positions.at(i) > 0)
+            {
+                relativeX = (positions.at(i) - 80) * 0.1f;
+                posY = relativeX * relativeX + relativeX;
+            }
+            else
+            {
+                relativeX = (positions.at(i) + 80) * 0.1f;
+                posY = relativeX * relativeX + relativeX;
+            }
+
+            if (displacementY.size() < i+1) displacementY.push_back(posY - entities.at(i)->position.y);
+
+            sceneManager->render->DrawText(sceneManager->font, text.c_str(), entities.at(i)->position.x - (int)positions.at(i) + displacementX, posY - displacementY.at(i), 15, 0, colors.at(i));
+            LOG("%f", posY);
             positions.at(i) -= positions.at(i) * 0.05;
             timers.at(i) += dt;
         }
@@ -1261,6 +1275,7 @@ void Battle::DamageNoti()
             damages.erase(damages.begin() + i);
             positions.erase(positions.begin() + i);
             colors.erase(colors.begin() + i);
+            displacementY.erase(displacementY.begin() + i);
         }
     }
     if (entities.size() == 0) notifyDamage = false;

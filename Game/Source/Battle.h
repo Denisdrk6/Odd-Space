@@ -164,6 +164,7 @@ private:
     std::vector<int> damages;
     std::vector<float> timers;
     std::vector<float> positions;
+    std::vector<float> displacementY;
     std::vector<SDL_Color> colors;
     bool notifyDamage = true;
 
