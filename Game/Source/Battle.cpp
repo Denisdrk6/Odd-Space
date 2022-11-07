@@ -451,7 +451,10 @@ bool Battle::Draw()
     {
         //NAME
         std::string name = sceneManager->entityManager->entities[0].At(p)->data->infoEntities.info.name.GetString();
-        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 15 + (225 * p), 448, 25, 0, { 255, 255, 255, 255 });
+        // SI ES EL TURNO DE UN HEROE PONER EL COLOR EN AMARILLO
+        SDL_Color color = { 255, 255, 255, 255 };
+        if (playerMenu && characterTurn == p) color = { 255, 255, 0, 255 };
+        sceneManager->render->DrawText(sceneManager->font, name.c_str(), 15 + (225 * p), 448, 25, 0, color);
         //HP
         std::string HP = std::to_string(sceneManager->entityManager->entities[0].At(p)->data->infoEntities.info.HP);
         std::string maxHP = std::to_string(sceneManager->entityManager->entities[0].At(p)->data->infoEntities.info.maxHP);
