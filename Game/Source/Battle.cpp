@@ -1242,26 +1242,25 @@ void Battle::DamageNoti()
     {
         if (timers.at(i) < 0.8f)
         {
+            bool isEnemy = entities.at(i)->type == EntityType::ENEMY;
             text = "-" + std::to_string(damages.at(i));
-            int displacementX = -120;
-            if (entities.at(i)->type == EntityType::ENEMY)
+            float relativeX, posY = 0;
+            int displacementX = -130;
+            if (isEnemy)
             {
                 displacementX = 150;
-            }
-
-            float relativeX, posY = 0;
-            if (positions.at(i) > 0)
-            {
                 relativeX = (positions.at(i) - 80) * 0.1f;
                 posY = relativeX * relativeX + relativeX;
             }
-            else
+            else // Parabolic to the left
             {
-                relativeX = (positions.at(i) + 80) * 0.1f;
+                relativeX = -(positions.at(i) + 80) * 0.1f;
                 posY = relativeX * relativeX + relativeX;
             }
 
             if (displacementY.size() < i+1) displacementY.push_back(posY - entities.at(i)->position.y);
+
+            if (!isEnemy) posY -= 32; // Los heroes ocupan 2 tiles no 1
 
             sceneManager->render->DrawText(sceneManager->font, text.c_str(), entities.at(i)->position.x - (int)positions.at(i) + displacementX, posY - displacementY.at(i), 15, 0, colors.at(i));
             LOG("%f", posY);
