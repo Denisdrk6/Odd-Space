@@ -159,6 +159,10 @@ bool Title::OnGuiMouseClickEvent(GuiControl* control)
         sceneManager->loadrequested = true;
         sceneManager->entityManager->CreateEntity(EntityType::CAPTAIN)->inBattle = true;
         sceneManager->entityManager->CreateEntity(EntityType::CAPTAIN)->inBattle = false;
+
+        // When loading from Title Screen
+        if (sceneManager->dialogueSystem->dialogueTrees.empty())
+            sceneManager->dialogueSystem->LoadDialogue("dialogues.xml");
         break;
     case 3:
         sceneManager->options->Load();
