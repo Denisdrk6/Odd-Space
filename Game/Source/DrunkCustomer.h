@@ -3,9 +3,9 @@
 
 #include "Enemy.h"
 
-
 class Render;
 class Textures;
+class Audio;
 
 
 class DrunkCustomer : public Enemy
@@ -13,7 +13,7 @@ class DrunkCustomer : public Enemy
 public:
 
     // Get unique instance of the class
-    static DrunkCustomer* GetInstance(Render* render, Textures* tex);
+    static DrunkCustomer* GetInstance(Render* render, Textures* tex, Audio* audio);
     
     // Delete the instance
     void ResetInstance();
@@ -41,7 +41,7 @@ private:
     // Singleton instance
     static DrunkCustomer* instance;
     // Private Constructor
-    DrunkCustomer(Render* render, Textures* tex);
+    DrunkCustomer(Render* render, Textures* tex, Audio* audio);
     // Private Destructor
     virtual ~DrunkCustomer();
     // Declare the copy constructor and the assignment operator
@@ -54,6 +54,7 @@ private:
 
     Render* render;
     Textures* tex;
+    Audio* audio;
 };
 
 #endif // __DRUNKCUSTOMER_H__

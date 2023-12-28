@@ -215,7 +215,6 @@ bool Battle::Update(float dt)
     bool ret = false;
 
     GamePad& pad = sceneManager->input->pads[0];
-    LOG("Animation = %d", animation);
 
     //Player Turn
     if (playerMenu && !sceneManager->wasBattle)
@@ -829,7 +828,7 @@ void Battle::BattleEscaped()
     else ChangeTurns();
 }
 
-void Battle::DamagePlayer(int player)
+void Battle::DamagePlayer(int player) // Damage dealt by player
 {
     bool skip = false; // If all enemies are dead but we still have to attack
 
@@ -882,6 +881,8 @@ void Battle::DamagePlayer(int player)
                     EmitterData::EmitterType::SMOKE, sceneManager->render);
                 AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt, false);
             }
+
+            sceneManager->audio->PlayFx(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->hurtFx); // Play enemy hurt sound
         }
 
         if (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP <= 0)
@@ -1266,7 +1267,6 @@ void Battle::DamageNoti()
             if (!isEnemy) posY -= 32; // Los heroes ocupan 2 tiles no 1
 
             sceneManager->render->DrawText(sceneManager->font, text.c_str(), entities.at(i)->position.x - (int)positions.at(i) + displacementX, posY - displacementY.at(i), 15, 0, colors.at(i));
-            LOG("%f", posY);
             positions.at(i) -= positions.at(i) * 0.05;
             timers.at(i) += dt;
         }

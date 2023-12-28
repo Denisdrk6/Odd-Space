@@ -37,7 +37,7 @@ App::App(int argc, char* args[]) : argc(argc), args(args)
 	tex = new Textures(assets, render);
 	audio = new Audio(assets);
 	particleSystem = new ParticleSystem(tex);
-	entityManager = new EntityManager(input, render, tex);
+	entityManager = new EntityManager(input, render, tex, audio);
 	dialogueSystem = new DialogueSystem(input, render, tex, audio);
 	sceneManager = new SceneManager(input, render, tex, win, entityManager, audio, dialogueSystem, particleSystem);
 

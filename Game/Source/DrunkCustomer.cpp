@@ -4,14 +4,15 @@
 
 #include "Render.h"
 #include "Textures.h"
+#include "Audio.h"
 
 
 
 DrunkCustomer* DrunkCustomer::instance = nullptr;
 // Instance creator
-DrunkCustomer* DrunkCustomer::GetInstance(Render* render, Textures* tex)
+DrunkCustomer* DrunkCustomer::GetInstance(Render* render, Textures* tex, Audio* audio)
 {
-    instance = new DrunkCustomer(render, tex);
+    instance = new DrunkCustomer(render, tex, audio);
     LOG("Returning drunk customer instance");
 
     return instance;
@@ -22,10 +23,11 @@ void DrunkCustomer::ResetInstance()
     RELEASE(instance);
 }
 // Constructor
-DrunkCustomer::DrunkCustomer(Render* render, Textures* tex) : Enemy(EnemyType::DRUNKCUSTOMER)
+DrunkCustomer::DrunkCustomer(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyType::DRUNKCUSTOMER)
 {
     this->render = render;
     this->tex = tex;
+    this->audio = audio;
 
     drunkCustomerTexture = NULL;
     position = iPoint(0, 0);
@@ -56,6 +58,7 @@ DrunkCustomer::DrunkCustomer(Render* render, Textures* tex) : Enemy(EnemyType::D
 
     //Define Hurt Texture
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
+    hurtFx = this->audio->LoadFx("audio/fx/hurt_drunk.wav");
 }
 // Destructor
 DrunkCustomer::~DrunkCustomer()

@@ -11,6 +11,7 @@ class Input;
 class Render;
 class Textures;
 class Player;
+class Audio;
 
 enum class SceneType;
 
@@ -19,7 +20,7 @@ class EntityManager : public Module
 public:
 
 	// Constructor
-	EntityManager(Input* input, Render* render, Textures* tex);
+	EntityManager(Input* input, Render* render, Textures* tex, Audio* audio);
 	// Destructor
 	virtual ~EntityManager();
 
@@ -70,6 +71,7 @@ private:
 	Input* input;
 	Render* render;
 	Textures* tex;
+	Audio* audio;
 };
 
 #endif // __ENTITYMANAGER_H__

@@ -29,11 +29,12 @@
 
 
 // Constructor
-EntityManager::EntityManager(Input* input, Render* render, Textures* tex) : Module()
+EntityManager::EntityManager(Input* input, Render* render, Textures* tex, Audio* audio) : Module()
 {
 	this->input = input;
 	this->render = render;
 	this->tex = tex;
+	this->audio = audio;
 
 	name.Create("entitymanager");
 }
@@ -112,7 +113,7 @@ Entity* EntityManager::CreateEntity(EntityType type)
 		switch (*previousScene)
 		{
 		case SceneType::CANTINA:
-			ret = DrunkCustomer::GetInstance(render, tex);
+			ret = DrunkCustomer::GetInstance(render, tex, audio);
 			break;
 
 		case SceneType::WC:

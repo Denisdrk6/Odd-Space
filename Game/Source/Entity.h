@@ -126,6 +126,8 @@ public:
     bool canCross1Door = false;
     bool canCross2Door = false;
     bool canCrossESPDoor = false;
+
+    int hurtFx = 0;
 };
 
 #endif // __ENTITY_H__
