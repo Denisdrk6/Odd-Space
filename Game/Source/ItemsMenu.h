@@ -52,6 +52,8 @@ private:
     GuiButton* itemsButtons[7];
     GuiButton* charButtons[2];
 
+    SDL_Texture* itemSprites[7];
+    SDL_Texture* itemSpritesEmpty[7];
     SDL_Texture* itemsText;
     SDL_Texture* UI;
 

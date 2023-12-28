@@ -60,7 +60,7 @@ GiantBat::GiantBat(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyTyp
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
 
     // Define Hurt Sound Fx
-    hurtFx = this->audio->LoadFx("audio/fx/hurt_bat.wav");
+    interactFx = this->audio->LoadFx("audio/fx/hurt_bat.wav");
 }
 // Destructor
 GiantBat::~GiantBat()
@@ -110,7 +110,7 @@ bool GiantBat::UnLoad()
     tex->UnLoad(giantBatTexture);
     tex->UnLoad(hurtTexture);
 
-    audio->UnloadFx(hurtFx);
+    audio->UnloadFx(interactFx);
 
     RELEASE(hurtAnim);
     RELEASE(deathAnim);

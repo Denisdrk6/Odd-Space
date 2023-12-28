@@ -882,7 +882,7 @@ void Battle::DamagePlayer(int player) // Damage dealt by player
                 AddDamage(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data, damageDealt, false);
             }
 
-            sceneManager->audio->PlayFx(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->hurtFx); // Play enemy hurt sound
+            sceneManager->audio->PlayFx(sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->interactFx); // Play enemy hurt sound
         }
 
         if (sceneManager->entityManager->entities[1].At(selectedEnemies[player])->data->infoEntities.info.HP <= 0)

@@ -60,7 +60,7 @@ MutantRat::MutantRat(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyT
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
 
     // Define Hurt Sound Fx
-    hurtFx = this->audio->LoadFx("audio/fx/hurt_rat.wav");
+    interactFx = this->audio->LoadFx("audio/fx/hurt_rat.wav");
 }
 // Destructor
 MutantRat::~MutantRat()
@@ -110,7 +110,7 @@ bool MutantRat::UnLoad()
     tex->UnLoad(mutantRatTexture);
     tex->UnLoad(hurtTexture);
 
-    audio->UnloadFx(hurtFx);
+    audio->UnloadFx(interactFx);
 
     RELEASE(mutantRatAnim);
 

@@ -200,7 +200,7 @@ bool ItemsMenu::Draw()
 
         itemsButtons[i]->Draw(sceneManager->render, sceneManager->font);
         std::string object = std::to_string(sceneManager->entityManager->quantity[i]);
-        sceneManager->render->DrawText(sceneManager->font, ("x " + object).c_str(), 750, (i * 79) + 137, 25, 0, { 255, 255, 255, 255 });
+        sceneManager->render->DrawText(sceneManager->font, ("x " + object).c_str(), 720, (i * 79) + 137, 25, 0, { 255, 255, 255, 255 });
     
         switch (c)
         {

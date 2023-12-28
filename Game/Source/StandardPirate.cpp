@@ -51,7 +51,7 @@ StandardPirates::StandardPirates(Render* render, Textures* tex, Audio* audio) : 
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
 
     // Define Hurt Sound Fx
-    hurtFx = this->audio->LoadFx("audio/fx/hurt_drunk.wav");
+    interactFx = this->audio->LoadFx("audio/fx/hurt_drunk.wav");
 }
 // Destructor
 StandardPirates::~StandardPirates()
@@ -99,7 +99,7 @@ bool StandardPirates::UnLoad()
 {
     tex->UnLoad(hurtTexture);
 
-    audio->UnloadFx(hurtFx);
+    audio->UnloadFx(interactFx);
 
     RELEASE(standardPirateAnim);
 

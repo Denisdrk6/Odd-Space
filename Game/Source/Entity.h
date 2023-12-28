@@ -127,7 +127,7 @@ public:
     bool canCross2Door = false;
     bool canCrossESPDoor = false;
 
-    int hurtFx = 0;
+    int interactFx = 0; // Enemy hurt & item used
 };
 
 #endif // __ENTITY_H__
