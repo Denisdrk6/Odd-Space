@@ -6,6 +6,7 @@
 
 class Render;
 class Textures;
+class Audio;
 
 
 class MutantRat : public Enemy
@@ -13,7 +14,7 @@ class MutantRat : public Enemy
 public:
 
     // Get unique instance of the class
-    static MutantRat* GetInstance(Render* render, Textures* tex);
+    static MutantRat* GetInstance(Render* render, Textures* tex, Audio* audio);
     // Delete the instance
     void ResetInstance();
 
@@ -40,7 +41,7 @@ private:
     // Singleton instance
     static MutantRat* instance;
     // Private Constructor
-    MutantRat(Render* render, Textures* tex);
+    MutantRat(Render* render, Textures* tex, Audio* audio);
     // Private Destructor
     virtual ~MutantRat();
     // Declare the copy constructor and the assignment operator
@@ -53,6 +54,7 @@ private:
 
     Render* render;
     Textures* tex;
+    Audio* audio;
 };
 
 #endif // __MUTANTRAT_H__

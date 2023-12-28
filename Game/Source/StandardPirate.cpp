@@ -4,14 +4,15 @@
 
 #include "Render.h"
 #include "Textures.h"
+#include "Audio.h"
 
 
 
 StandardPirates* StandardPirates::instance = nullptr;
 // Instance creator
-StandardPirates* StandardPirates::GetInstance(Render* render, Textures* tex)
+StandardPirates* StandardPirates::GetInstance(Render* render, Textures* tex, Audio* audio)
 {
-    instance = new StandardPirates(render, tex);
+    instance = new StandardPirates(render, tex, audio);
     LOG("Returning drunk customer instance");
 
     return instance;
@@ -22,10 +23,11 @@ void StandardPirates::ResetInstance()
     RELEASE(instance);
 }
 // Constructor
-StandardPirates::StandardPirates(Render* render, Textures* tex) : Enemy(EnemyType::STANDARTPIRATE)
+StandardPirates::StandardPirates(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyType::STANDARTPIRATE)
 {
     this->render = render;
     this->tex = tex;
+    this->audio = audio;
 
     standardPirateTexture = NULL;
     position = iPoint(0, 0);
@@ -47,6 +49,9 @@ StandardPirates::StandardPirates(Render* render, Textures* tex) : Enemy(EnemyTyp
 
     //Define Hurt Texture
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
+
+    // Define Hurt Sound Fx
+    hurtFx = this->audio->LoadFx("audio/fx/hurt_drunk.wav");
 }
 // Destructor
 StandardPirates::~StandardPirates()
@@ -94,6 +99,8 @@ bool StandardPirates::UnLoad()
 {
     tex->UnLoad(hurtTexture);
 
+    audio->UnloadFx(hurtFx);
+
     RELEASE(standardPirateAnim);
 
     RELEASE(hurtAnim);
@@ -101,6 +108,7 @@ bool StandardPirates::UnLoad()
 
     render = nullptr;
     tex = nullptr;
+    audio = nullptr;
 
     return false;
 }

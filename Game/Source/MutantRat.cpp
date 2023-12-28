@@ -4,13 +4,14 @@
 
 #include "Render.h"
 #include "Textures.h"
+#include "Audio.h"
 
 
 MutantRat* MutantRat::instance = nullptr;
 // Instance creator
-MutantRat* MutantRat::GetInstance(Render* render, Textures* tex)
+MutantRat* MutantRat::GetInstance(Render* render, Textures* tex, Audio* audio)
 {
-    instance = new MutantRat(render,tex);
+    instance = new MutantRat(render, tex, audio);
     LOG("Returning mutant rat instance");
 
     return instance;
@@ -21,10 +22,11 @@ void MutantRat::ResetInstance()
     RELEASE(instance);
 }
 // Constructor
-MutantRat::MutantRat(Render* render, Textures* tex) : Enemy(EnemyType::MUTANTRAT)
+MutantRat::MutantRat(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyType::MUTANTRAT)
 {
     this->render = render;
     this->tex = tex;
+    this->audio = audio;
 
     mutantRatTexture = NULL;
     position = iPoint(0, 0);
@@ -56,6 +58,9 @@ MutantRat::MutantRat(Render* render, Textures* tex) : Enemy(EnemyType::MUTANTRAT
 
     //Define Hurt Texture
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
+
+    // Define Hurt Sound Fx
+    hurtFx = this->audio->LoadFx("audio/fx/hurt_rat.wav");
 }
 // Destructor
 MutantRat::~MutantRat()
@@ -105,6 +110,8 @@ bool MutantRat::UnLoad()
     tex->UnLoad(mutantRatTexture);
     tex->UnLoad(hurtTexture);
 
+    audio->UnloadFx(hurtFx);
+
     RELEASE(mutantRatAnim);
 
     RELEASE(hurtAnim);
@@ -112,6 +119,7 @@ bool MutantRat::UnLoad()
 
     render = nullptr;
     tex = nullptr;
+    audio = nullptr;
 
     return false;
 }

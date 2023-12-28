@@ -4,14 +4,15 @@
 
 #include "Render.h"
 #include "Textures.h"
+#include "Audio.h"
 
 
 
 GiantBat* GiantBat::instance = nullptr;
 // Instance creator
-GiantBat* GiantBat::GetInstance(Render* render,Textures* tex)
+GiantBat* GiantBat::GetInstance(Render* render,Textures* tex, Audio* audio)
 {
-    instance = new GiantBat(render, tex);
+    instance = new GiantBat(render, tex, audio);
     LOG("Returning giant bat instance");
 
     return instance;
@@ -22,10 +23,11 @@ void GiantBat::ResetInstance()
     RELEASE(instance);
 }
 // Constructor
-GiantBat::GiantBat(Render* render, Textures* tex) : Enemy(EnemyType::GIANTBAT)
+GiantBat::GiantBat(Render* render, Textures* tex, Audio* audio) : Enemy(EnemyType::GIANTBAT)
 {
     this->render = render;
     this->tex = tex;
+    this->audio = audio;
 
     giantBatTexture = NULL;
     position = iPoint(0, 0);
@@ -56,6 +58,9 @@ GiantBat::GiantBat(Render* render, Textures* tex) : Enemy(EnemyType::GIANTBAT)
 
     //Define Hurt Texture
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
+
+    // Define Hurt Sound Fx
+    hurtFx = this->audio->LoadFx("audio/fx/hurt_bat.wav");
 }
 // Destructor
 GiantBat::~GiantBat()
@@ -105,6 +110,8 @@ bool GiantBat::UnLoad()
     tex->UnLoad(giantBatTexture);
     tex->UnLoad(hurtTexture);
 
+    audio->UnloadFx(hurtFx);
+
     RELEASE(hurtAnim);
     RELEASE(deathAnim);
 
@@ -112,6 +119,7 @@ bool GiantBat::UnLoad()
     
     render = nullptr;
     tex = nullptr;
+    audio = nullptr;
 
     return false;
 }

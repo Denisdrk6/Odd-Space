@@ -6,6 +6,7 @@
 
 class Render;
 class Textures;
+class Audio;
 
 
 class StandardPirates : public Enemy
@@ -13,7 +14,7 @@ class StandardPirates : public Enemy
 public:
 
     // Get unique instance of the class
-    static StandardPirates* GetInstance(Render* render, Textures* tex);
+    static StandardPirates* GetInstance(Render* render, Textures* tex, Audio* audio);
     // Delete the instance
     void ResetInstance();
 
@@ -40,7 +41,7 @@ private:
     // Singleton instance
     static StandardPirates* instance;
     // Private Constructor
-    StandardPirates(Render* render, Textures* tex);
+    StandardPirates(Render* render, Textures* tex, Audio* audio);
     // Private Destructor
     virtual ~StandardPirates();
     // Declare the copy constructor and the assignment operator
@@ -53,6 +54,7 @@ private:
 
     Render* render;
     Textures* tex;
+    Audio* audio;
 };
 
 #endif // __STANDARDPIRATE_H__

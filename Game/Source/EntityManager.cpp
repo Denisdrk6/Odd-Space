@@ -118,7 +118,7 @@ Entity* EntityManager::CreateEntity(EntityType type)
 
 		case SceneType::WC:
 		case SceneType::EXTERIOR:
-			ret = MutantRat::GetInstance(render, tex);
+			ret = MutantRat::GetInstance(render, tex, audio);
 			break;
 
 		case SceneType::DUNGEON_EXT:
@@ -127,16 +127,16 @@ Entity* EntityManager::CreateEntity(EntityType type)
 			switch (rand() % 2)
 			{
 			case 0:
-				ret = MutantRat::GetInstance(render, tex);
+				ret = MutantRat::GetInstance(render, tex, audio);
 				break;
 			case 1:
-				ret = GiantBat::GetInstance(render, tex);
+				ret = GiantBat::GetInstance(render, tex, audio);
 				break;
 			}
 			break;
 
 		default:
-			ret = StandardPirates::GetInstance(render, tex);
+			ret = StandardPirates::GetInstance(render, tex, audio);
 			break;
 		}
 

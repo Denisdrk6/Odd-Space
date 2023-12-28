@@ -6,6 +6,7 @@
 
 class Render;
 class Textures;
+class Audio;
 
 
 class GiantBat : public Enemy
@@ -13,7 +14,7 @@ class GiantBat : public Enemy
 public:
 
     // Get unique instance of the class
-    static GiantBat* GetInstance(Render* render, Textures* tex);
+    static GiantBat* GetInstance(Render* render, Textures* tex, Audio* audio);
     // Delete the instance
     void ResetInstance();
 
@@ -40,7 +41,7 @@ private:
     // Singleton instance
     static GiantBat* instance;
     // Private Constructor
-    GiantBat(Render* render, Textures* tex);
+    GiantBat(Render* render, Textures* tex, Audio* audio);
     // Private Destructor
     virtual ~GiantBat();
     // Declare the copy constructor and the assignment operator
@@ -53,6 +54,7 @@ private:
 
     Render* render;
     Textures* tex;
+    Audio* audio;
 };
 
 #endif // __GIANTBAT_H__

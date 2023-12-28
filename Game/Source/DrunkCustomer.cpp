@@ -56,8 +56,10 @@ DrunkCustomer::DrunkCustomer(Render* render, Textures* tex, Audio* audio) : Enem
     drunkCustomerAnim->PushBack({ 224, 0, 112, 128 });
     drunkCustomerAnim->PushBack({ 112, 0, 112, 128 });
 
-    //Define Hurt Texture
+    // Define Hurt Texture
     hurtTexture = this->tex->Load("sprites/combat/cmb_hurt.png");
+
+    // Define Hurt Sound Fx
     hurtFx = this->audio->LoadFx("audio/fx/hurt_drunk.wav");
 }
 // Destructor
@@ -114,10 +116,16 @@ bool DrunkCustomer::UnLoad()
 {
     tex->UnLoad(drunkCustomerTexture);
     tex->UnLoad(hurtTexture);
+
+    audio->UnloadFx(hurtFx);
     
     RELEASE(drunkCustomerAnim);
     RELEASE(hurtAnim);
     RELEASE(deathAnim);
+
+    render = nullptr;
+    tex = nullptr;
+    audio = nullptr;
     
     return false;
 }
